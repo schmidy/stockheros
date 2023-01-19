@@ -11,10 +11,10 @@ public interface StockEventRepository extends CrudRepository<StockEvent, Integer
 
     List<StockEvent> findStockEventBySymbol(String symbol);
 
-    @Query(value = "SELECT s.* FROM stockevents s WHERE s.date = :date ", nativeQuery = true)
+    @Query(value = "SELECT s.* FROM StockEvents s WHERE s.date = :date ", nativeQuery = true)
     List<StockEvent>  findAllByDate(@Param("date") String date);
 
-    @Query(value = "SELECT * FROM stockevents WHERE symbol = :symbol and date = :date ", nativeQuery = true)
+    @Query(value = "SELECT * FROM StockEvents WHERE symbol = :symbol and date = :date ", nativeQuery = true)
     List<StockEvent>  findAllBySymbolAndDate(@Param("symbol")String symbol, @Param("date") String date);
 }
 

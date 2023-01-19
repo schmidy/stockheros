@@ -8,6 +8,10 @@ import com.redhawkstudios.stockheros.repository.SymbolRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 @RestController	// This means that this class is a Controller
 public class StockHeroController {
     @Autowired
@@ -34,23 +38,40 @@ public class StockHeroController {
     }
 
     @GetMapping(path={"/stockevents","/stockevents/{symbol}"})
-    public @ResponseBody Iterable<StockEvent> getStockEventsBySymbol(@PathVariable(name = "symbol", required = false) String symbol,
-                                                                     @RequestParam(name="date", required = false) String date) {
+    public @ResponseBody Iterable<StockEvent> getStockEventsBySymbol(
+            @PathVariable(name = "symbol", required = false) String symbol,
+            @RequestParam Map<String, String> allRequestParams) {
 
-        String returnValue = "";
+        return handleStockEventRequest(symbol.toUpperCase(), allRequestParams);
+    }
 
-        if (date != null) {
+    private List<StockEvent> handleStockEventRequest (String symbol, Map<String, String> allRequestParams) {
+
+        if (allRequestParams.size() == 0) {
+            return stockEventRepository.findStockEventBySymbol(symbol);
+        }
+
+        // Get all stock events
+        if (symbol == null && allRequestParams.size() == 0) {
+            return (List<StockEvent>) stockEventRepository.findAll();
+        }
+
+        // Handle stock events for single date
+        if (allRequestParams.get("date") != null) {
             if (symbol != null) {
-                return stockEventRepository.findAllBySymbolAndDate(symbol, date);
+                // get all for one symbol
+                return stockEventRepository.findAllBySymbolAndDate(symbol, allRequestParams.get("date"));
             }
-            return stockEventRepository.findAllByDate(date);
+            // get all symbols events for date
+            return stockEventRepository.findAllByDate(allRequestParams.get("date"));
         }
 
-        if (symbol == null) {
-            return stockEventRepository.findAll();
+        if (allRequestParams.get("startdate") != null) {
+
         }
 
-        return stockEventRepository.findStockEventBySymbol(symbol.toUpperCase());
+        return (List<StockEvent>) stockEventRepository.findAll();
+
     }
 
 }
