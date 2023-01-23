@@ -43,7 +43,8 @@ public class StockHeroController {
             @PathVariable(name = "symbol", required = false) String symbol,
             @RequestParam Map<String, String> allRequestParams) {
 
-        return handleStockEventRequest(symbol.toUpperCase(), allRequestParams);
+
+        return handleStockEventRequest(symbol, allRequestParams);
     }
 
     private List<StockEvent> handleStockEventRequest (String symbol, Map<String, String> allRequestParams) {
@@ -54,7 +55,7 @@ public class StockHeroController {
             if (symbol == null) {
                 return (List<StockEvent>) stockEventRepository.findAll();
             }
-            return stockEventRepository.findStockEventBySymbol(symbol);
+            return stockEventRepository.findStockEventBySymbol(symbol.toLowerCase());
         }
 
 
@@ -62,15 +63,15 @@ public class StockHeroController {
         if (allRequestParams.get("date") != null) {
             if (symbol != null) {
                 // get all for one symbol
-                return stockEventRepository.findAllBySymbolAndDate(symbol, allRequestParams.get("date"));
+                return stockEventRepository.findAllBySymbolAndDate(symbol.toLowerCase(), allRequestParams.get("date"));
             }
             // get all symbols events for date
             return stockEventRepository.findAllByDate(allRequestParams.get("date"));
         }
 
-        if (allRequestParams.get("startdate") != null) {
-
-        }
+//        if (allRequestParams.get("startdate") != null) {
+//
+//        }
 
         return (List<StockEvent>) stockEventRepository.findAll();
 
