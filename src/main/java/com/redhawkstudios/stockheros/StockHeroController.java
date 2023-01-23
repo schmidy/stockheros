@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController	// This means that this class is a Controller
+@CrossOrigin(origins = "*")
 public class StockHeroController {
     @Autowired
     private SymbolRepository symbolRepository;
@@ -47,14 +48,15 @@ public class StockHeroController {
 
     private List<StockEvent> handleStockEventRequest (String symbol, Map<String, String> allRequestParams) {
 
+        // No params sent on URL
         if (allRequestParams.size() == 0) {
+            // Get all stock events
+            if (symbol == null) {
+                return (List<StockEvent>) stockEventRepository.findAll();
+            }
             return stockEventRepository.findStockEventBySymbol(symbol);
         }
 
-        // Get all stock events
-        if (symbol == null && allRequestParams.size() == 0) {
-            return (List<StockEvent>) stockEventRepository.findAll();
-        }
 
         // Handle stock events for single date
         if (allRequestParams.get("date") != null) {
